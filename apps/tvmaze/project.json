@@ -1,0 +1,81 @@
+{
+  "name": "tvmaze",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/tvmaze/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "compiler": "babel",
+        "outputPath": "dist/apps/tvmaze",
+        "index": "apps/tvmaze/src/index.html",
+        "baseHref": "/",
+        "main": "apps/tvmaze/src/main.tsx",
+        "polyfills": "apps/tvmaze/src/polyfills.ts",
+        "tsConfig": "apps/tvmaze/tsconfig.app.json",
+        "assets": ["apps/tvmaze/src/favicon.ico", "apps/tvmaze/src/assets"],
+        "styles": [],
+        "scripts": [],
+        "webpackConfig": "@nrwl/react/plugins/webpack"
+      },
+      "configurations": {
+        "development": {
+          "extractLicenses": false,
+          "optimization": false,
+          "sourceMap": true,
+          "vendorChunk": true
+        },
+        "production": {
+          "fileReplacements": [
+            {
+              "replace": "apps/tvmaze/src/environments/environment.ts",
+              "with": "apps/tvmaze/src/environments/environment.prod.ts"
+            }
+          ],
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "vendorChunk": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/webpack:dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "tvmaze:build",
+        "hmr": true
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "tvmaze:build:development"
+        },
+        "production": {
+          "buildTarget": "tvmaze:build:production",
+          "hmr": false
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/tvmaze/**/*.{ts,tsx,js,jsx}"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/tvmaze"],
+      "options": {
+        "jestConfig": "apps/tvmaze/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}
