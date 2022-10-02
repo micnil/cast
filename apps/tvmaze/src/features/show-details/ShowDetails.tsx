@@ -1,22 +1,22 @@
-import { FC } from 'react';
-import { FaStar } from 'react-icons/fa';
-import { useParams } from 'react-router-dom';
-import { useShowQuery } from '../../api/api';
-import LayoutGrid from '../../components/LayoutGrid';
-import Loading from '../../components/Loading';
-import Message from '../../components/Message';
-import Text from '../../components/Text';
-import emptyImage from '../../static/images/no-image.png';
-import CastList from './CastList';
-import Episode from './Episode';
-import ShowInfo from './ShowInfo';
-import { DetailsSection, Header, RatingCard, ShowImage } from './styles';
+import { FC } from "react";
+import { FaStar } from "react-icons/fa";
+import { useParams } from "react-router-dom";
+import emptyImage from "../../assets/images/no-image.png";
+import LayoutGrid from "../../components/LayoutGrid";
+import Loading from "../../components/Loading";
+import Message from "../../components/Message";
+import Text from "../../components/Text";
+import CastList from "./CastList";
+import EpisodeView from "./EpisodeView";
+import { useShowQuery } from "./hooks/useShowQuery";
+import ShowInfo from "./ShowInfo";
+import { DetailsSection, Header, RatingCard, ShowImage } from "./styles";
 
 const ShowDetails: FC = () => {
   const { showId } = useParams<{ showId: string }>();
-  const { data, loading, error } = useShowQuery(showId);
+  const { show, isLoading, error } = useShowQuery({ id: showId });
 
-  if (loading) {
+  if (isLoading) {
     return <Loading />;
   }
 
@@ -28,43 +28,43 @@ const ShowDetails: FC = () => {
     );
   }
 
-  if (!data) {
+  if (!show) {
     throw new Error(`No data in response to show with id: ${showId}`);
   }
 
-  const prevEpisode = data?._embedded.previousepisode;
+  const prevEpisode = show?._embedded.previousepisode;
   return (
     <LayoutGrid>
       <Header>
-        <h1>{data?.name}</h1>
+        <h1>{show?.name}</h1>
         <RatingCard>
-          <FaStar size={'1.5em'} />
+          <FaStar size={"1.5em"} />
           <div>
-            <Text size="l">{data.rating.average ?? '?'}</Text>
+            <Text size="l">{show.rating.average ?? "?"}</Text>
             <Text size="s">/10</Text>
           </div>
         </RatingCard>
       </Header>
       <DetailsSection>
-        <ShowImage src={data?.image?.medium ?? emptyImage} />
+        <ShowImage src={show?.image?.medium ?? emptyImage} />
         <div
           dangerouslySetInnerHTML={{
             __html:
-              data?.summary ??
-              '<p>There is currenty no summary available for this show</p>',
+              show?.summary ??
+              "<p>There is currenty no summary available for this show</p>",
           }}
         ></div>
       </DetailsSection>
       <DetailsSection>
-        <ShowInfo show={data} />
+        <ShowInfo show={show} />
       </DetailsSection>
       {prevEpisode && (
         <DetailsSection>
-          <Episode title={'Previous episode'} episode={prevEpisode} />
+          <EpisodeView title={"Previous episode"} episode={prevEpisode} />
         </DetailsSection>
       )}
       <DetailsSection>
-        <CastList cast={data._embedded.cast} />
+        <CastList cast={show._embedded.cast} />
       </DetailsSection>
     </LayoutGrid>
   );

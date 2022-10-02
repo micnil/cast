@@ -1,9 +1,13 @@
-import { FC } from 'react';
-import { CastMember } from '../../core/api-tvmaze/model/CastMember';
-import noImagePerson from '../../static/images/no-image-person.png';
+import { FC } from "react";
+import noImagePerson from "../../assets/images/no-image-person.png";
+import { CastMember } from "../../core/api-tvmaze/model/CastMember";
 import {
-    CastImage, CastInfo, CastInfoText, CastListContainer, CastListItem
-} from './styles';
+  CastImage,
+  CastInfo,
+  CastInfoText,
+  CastListContainer,
+  CastListItem
+} from "./styles";
 
 interface Props {
   cast: CastMember[];
@@ -20,7 +24,7 @@ const CastList: FC<Props> = ({ cast }) => {
           <CastImage src={member.person.image?.medium ?? noImagePerson} />
           <CastInfo>
             <CastInfoText weight={600}>{member.person.name}</CastInfoText>
-            <CastInfoText>{'as: ' + member.character.name}</CastInfoText>
+            <CastInfoText>{"as: " + member.character.name}</CastInfoText>
           </CastInfo>
         </CastListItem>
       ))}

@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { Link } from 'react-router-dom';
+import emptyImage from '../../assets/images/no-image.png';
 import { Show } from '../../core/api-tvmaze/model/Show';
-import emptyImage from '../../static/images/no-image.png';
 import {
   InfoContainer,
   ResultItemContainer,

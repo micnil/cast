@@ -6,7 +6,7 @@ interface Props {
   title: string;
   episode: Episode;
 }
-const Episode: FC<Props> = ({ episode, title }) => {
+const EpisodeView: FC<Props> = ({ episode, title }) => {
   return (
     <EpisodeInfo>
       <EpisodeTitle>
@@ -33,4 +33,4 @@ const Episode: FC<Props> = ({ episode, title }) => {
   );
 };
 
-export default Episode;
+export default EpisodeView;
