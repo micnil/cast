@@ -1,0 +1,35 @@
+{
+  "name": "core-cache",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/core-cache/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/core-cache/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/core-cache"],
+      "options": {
+        "jestConfig": "libs/core-cache/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/core-cache",
+        "tsConfig": "libs/core-cache/tsconfig.lib.json",
+        "packageJson": "libs/core-cache/package.json",
+        "main": "libs/core-cache/src/index.ts",
+        "assets": ["libs/core-cache/*.md"]
+      }
+    }
+  },
+  "tags": []
+}

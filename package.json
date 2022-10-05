@@ -9,6 +9,7 @@
   },
   "private": true,
   "dependencies": {
+    "@nrwl/node": "^14.8.3",
     "core-js": "^3.6.5",
     "ky": "^0.31.3",
     "react": "18.2.0",

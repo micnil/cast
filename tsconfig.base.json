@@ -15,7 +15,9 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "strict": true,
-    "paths": {}
+    "paths": {
+      "@cast/core-cache": ["libs/core-cache/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }
