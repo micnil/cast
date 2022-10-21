@@ -7,13 +7,15 @@ import { ManyToManySetMap } from "./ManyToManyMap";
 import { ServiceKey } from "./model/ServiceKey";
 import { PendingRequests } from "./PendingRequests";
 import { ServiceTracker } from "./ServiceTracker";
+import { Subscribable } from "./Subscribable";
 
-export class ObservableServiceCache {
+export class ObservableServiceCache extends Subscribable {
   private cache: Cache;
   private requestGroupMap = new ManyToManySetMap<ServiceKey, Request>();
   private pendingRequests = new PendingRequests();
 
   private constructor(cache: Cache) {
+    super();
     this.cache = cache;
   }
 
@@ -37,6 +39,13 @@ export class ObservableServiceCache {
 
   endService(serviceTracker: ServiceTracker): void {
     const trackerState = serviceTracker.state;
-    this.requestGroupMap.setKey(trackerState.serviceKey, trackerState.requests);
+    if (
+      this.requestGroupMap.setKey(
+        trackerState.serviceKey,
+        trackerState.requests
+      )
+    ) {
+      this.notify(trackerState.serviceKey);
+    }
   }
 }
