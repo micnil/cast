@@ -37,6 +37,8 @@ ky.extend({
   }
 })
 
+cache.endService(studentQuery)
+
 const unsubscribe = cache.subsribe('student-query', cacheUpdatedCallback);
 unsubscribe()
 ```
