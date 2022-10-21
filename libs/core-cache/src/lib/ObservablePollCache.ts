@@ -20,6 +20,7 @@ export class ObservableServiceCache extends Subscribable {
   }
 
   static async create(cacheName: string): Promise<ObservableServiceCache> {
+    await caches.delete(cacheName);
     const cache = await caches.open(cacheName);
     return new ObservableServiceCache(cache);
   }
