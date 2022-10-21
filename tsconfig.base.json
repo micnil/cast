@@ -16,7 +16,8 @@
     "baseUrl": ".",
     "strict": true,
     "paths": {
-      "@cast/core-cache": ["libs/core-cache/src/index.ts"]
+      "@cast/core-cache": ["libs/core-cache/src/index.ts"],
+      "@cast/core-util-types": ["libs/core-util-types/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

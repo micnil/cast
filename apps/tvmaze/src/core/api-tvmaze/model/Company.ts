@@ -1,4 +1,4 @@
-import { Maybe } from "../../common/model/Maybe";
+import { Maybe } from "@cast/core-util-types";
 import { Country } from "./Country";
 
 export type Company = {

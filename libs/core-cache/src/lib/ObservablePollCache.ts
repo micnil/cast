@@ -2,6 +2,7 @@
 // https://developer.mozilla.org/en-US/docs/Web/API/CacheStorage
 // ObservablePollCache will maintain 1 cache key that you can subscribe to
 
+import { Maybe } from "@cast/core-util-types";
 import { ManyToManySetMap } from "./ManyToManyMap";
 import { ServiceKey } from "./model/ServiceKey";
 import { ServiceTracker } from "./ServiceTracker";
@@ -57,20 +58,32 @@ import { ServiceTracker } from "./ServiceTracker";
 // const unsubscribe = pollCache.subsribe('student-query', cacheUpdatedCallback);
 // unsubescribe() // removes request1 and request2
 
-
-
 export class ObservableServiceCache {
-  private cacheName: string;
+  private cache: Cache;
   private requestGroupMap = new ManyToManySetMap<ServiceKey, Request>();
-  private loadingRequests: Set<Request> = new Set();
+  private pendingRequests: Map<Request, Promise<Response>> = new Map();
 
-  constructor(cacheName: string) {
-    this.cacheName = cacheName;
+  private constructor(cache: Cache) {
+    this.cache = cache;
   }
 
-  async startService(serviceKey: ServiceKey): Promise<ServiceTracker> {
-    const cache = await caches.open(this.cacheName);
-    return new ServiceTracker(serviceKey, cache);
+  static async create(cacheName: string): Promise<ObservableServiceCache> {
+    const cache = await caches.open(cacheName);
+    return new ObservableServiceCache(cache);
+  }
+
+
+  match(request: Request): Promise<Maybe<Response>> {
+    const pendingResponse = this.pendingRequests.get(request);
+    if (pendingResponse) {
+      return pendingResponse;
+    } else {
+      return this.cache.match(request);
+    }
+  }
+
+  startService(serviceKey: ServiceKey): ServiceTracker {
+    return new ServiceTracker(serviceKey, this.cache);
   }
 
   endService(serviceTracker: ServiceTracker): void {

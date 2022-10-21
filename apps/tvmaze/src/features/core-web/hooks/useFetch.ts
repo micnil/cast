@@ -1,5 +1,5 @@
+import { Maybe } from "@cast/core-util-types";
 import { useEffect, useState } from "react";
-import { Maybe } from "../../../core/common/model/Maybe";
 
 type FetchOut<D = unknown, E extends Error = Error> = {
   data: Maybe<D>;
