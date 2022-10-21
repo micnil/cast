@@ -5,6 +5,7 @@
 import { Maybe } from "@cast/core-util-types";
 import { ManyToManySetMap } from "./ManyToManyMap";
 import { ServiceKey } from "./model/ServiceKey";
+import { PendingRequests } from "./PendingRequests";
 import { ServiceTracker } from "./ServiceTracker";
 
 // Cache
@@ -61,7 +62,7 @@ import { ServiceTracker } from "./ServiceTracker";
 export class ObservableServiceCache {
   private cache: Cache;
   private requestGroupMap = new ManyToManySetMap<ServiceKey, Request>();
-  private pendingRequests: Map<Request, Promise<Response>> = new Map();
+  private pendingRequests = new PendingRequests();
 
   private constructor(cache: Cache) {
     this.cache = cache;
@@ -72,9 +73,8 @@ export class ObservableServiceCache {
     return new ObservableServiceCache(cache);
   }
 
-
   match(request: Request): Promise<Maybe<Response>> {
-    const pendingResponse = this.pendingRequests.get(request);
+    const pendingResponse = this.pendingRequests.getResponse(request);
     if (pendingResponse) {
       return pendingResponse;
     } else {
@@ -83,7 +83,7 @@ export class ObservableServiceCache {
   }
 
   startService(serviceKey: ServiceKey): ServiceTracker {
-    return new ServiceTracker(serviceKey, this.cache);
+    return new ServiceTracker(serviceKey, this.cache, this.pendingRequests);
   }
 
   endService(serviceTracker: ServiceTracker): void {
