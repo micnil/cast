@@ -1,7 +1,3 @@
-// TODO:
-// https://developer.mozilla.org/en-US/docs/Web/API/CacheStorage
-// ObservablePollCache will maintain 1 cache key that you can subscribe to
-
 import { Maybe } from "@cast/core-util-types";
 import { ManyToManySetMap } from "./ManyToManyMap";
 import { ServiceKey } from "./model/ServiceKey";
@@ -9,10 +5,15 @@ import { PendingRequests } from "./PendingRequests";
 import { ServiceTracker } from "./ServiceTracker";
 import { Subscribable } from "./Subscribable";
 
+type ServiceState = {
+  responsesHash: string;
+};
+
 export class ObservableServiceCache extends Subscribable {
   private cache: Cache;
   private requestGroupMap = new ManyToManySetMap<ServiceKey, Request>();
   private pendingRequests = new PendingRequests();
+  private serviceState = new Map<ServiceKey, ServiceState>();
 
   private constructor(cache: Cache) {
     super();
@@ -38,14 +39,19 @@ export class ObservableServiceCache extends Subscribable {
     return new ServiceTracker(serviceKey, this.cache, this.pendingRequests);
   }
 
-  endService(serviceTracker: ServiceTracker): void {
+  getServiceResponsesHash(serviceKey: ServiceKey): Maybe<string> {
+    return this.serviceState.get(serviceKey)?.responsesHash;
+  }
+
+  async endService(serviceTracker: ServiceTracker): Promise<void> {
     const trackerState = serviceTracker.state;
-    if (
-      this.requestGroupMap.setKey(
-        trackerState.serviceKey,
-        trackerState.requests
-      )
-    ) {
+    this.requestGroupMap.setKey(trackerState.serviceKey, trackerState.requests);
+    const responsesHash = await trackerState.getResponsesHash();
+    const prevResponsesHash = this.serviceState.get(
+      trackerState.serviceKey
+    )?.responsesHash;
+    this.serviceState.set(trackerState.serviceKey, { responsesHash });
+    if (prevResponsesHash !== responsesHash) {
       this.notify(trackerState.serviceKey);
     }
   }
