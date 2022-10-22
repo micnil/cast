@@ -70,7 +70,7 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/apps/tvmaze"],
+      "outputs": ["{workspaceRoot}/coverage/apps/tvmaze"],
       "options": {
         "jestConfig": "apps/tvmaze/jest.config.ts",
         "passWithNoTests": true
