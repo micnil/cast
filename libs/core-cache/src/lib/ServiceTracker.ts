@@ -5,10 +5,18 @@ import { PendingRequests } from "./PendingRequests";
 type ServiceTrackerState = {
   serviceKey: ServiceKey;
   requests: Set<Request>;
+  getResponsesHash(): Promise<string>;
+};
+
+const hashResponses = async (responses: Response[]): Promise<string> => {
+  return (
+    await Promise.all(responses.map((response) => response.text()))
+  ).join();
 };
 
 export class ServiceTracker {
   private requests: Set<Request> = new Set<Request>();
+  private responses: Response[] = [];
   private serviceKey: ServiceKey;
   private cache: Cache;
   private pendingRequests: PendingRequests;
@@ -31,11 +39,13 @@ export class ServiceTracker {
     this.pendingRequests.resolve(args);
     this.cache.put(args.request, args.response);
     this.requests.add(args.request);
+    this.responses.push(args.response.clone());
   }
 
   get state(): ServiceTrackerState {
     return {
       serviceKey: this.serviceKey,
+      getResponsesHash: async () => hashResponses(this.responses),
       requests: this.requests,
     };
   }
