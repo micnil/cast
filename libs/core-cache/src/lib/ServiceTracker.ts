@@ -32,23 +32,22 @@ export class ServiceTracker {
     this.pendingRequests = pendingRequests;
   }
 
-  match(request: Request): Promise<Maybe<Response>> {
-    const pendingResponse = this.pendingRequests.getResponse(request);
-    if (pendingResponse) {
-      return pendingResponse;
-    } else {
-      return this.cache.match(request);
-    }
+  async isCached(request: Request): Promise<boolean> {
+    return !!(await this.cache.match(request));
+  }
+
+  getPendingResponse(request: Request): Maybe<Promise<Response>> {
+    return this.pendingRequests.getResponse(request);
   }
 
   beginRequest(request: Request) {
     this.pendingRequests.isLoading(request);
   }
 
-  cacheRequest(args: RequestResponse) {
+  endRequest(args: RequestResponse) {
     this.pendingRequests.resolve(args);
-    this.cache.put(args.request, args.response);
-    this.requests.add(args.request);
+    this.cache.put(args.request, args.response.clone());
+    this.requests.add(args.request.clone());
     this.responses.push(args.response.clone());
   }
 

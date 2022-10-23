@@ -1,7 +1,6 @@
 import { Maybe } from "@cast/core-util-types";
 import { DestructedPromise } from "./model/DestructedPromise";
 import { RequestResponse } from "./model/RequestResponse";
-import { assertDefined } from "./util/assertDefined";
 
 export class PendingRequests {
   private pendingRequests: Map<Request, DestructedPromise<Response>> =
@@ -14,11 +13,7 @@ export class PendingRequests {
 
   resolve({ request, response }: RequestResponse) {
     const destructedPromise = this.pendingRequests.get(request);
-    assertDefined(
-      destructedPromise,
-      "Attempted to resolve pending request that doesn't exist"
-    );
-    destructedPromise.resolve(response);
+    destructedPromise?.resolve(response);
     this.pendingRequests.delete(request);
   }
 

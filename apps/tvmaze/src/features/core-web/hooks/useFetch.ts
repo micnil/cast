@@ -32,14 +32,18 @@ const getServiceClient = (
     hooks: {
       beforeRequest: [
         async (request) => {
-          serviceTracker.beginRequest(request);
-          // Either if it is loading or if it is already there
-          return await serviceTracker.match(request);
+          const isCached = await serviceTracker.isCached(request);
+          if (!isCached) {
+            const pendingResponse = serviceTracker.getPendingResponse(request);
+            return pendingResponse
+              ? await pendingResponse
+              : serviceTracker.beginRequest(request);
+          }
         },
       ],
       afterResponse: [
         (request, _, response) => {
-          serviceTracker.cacheRequest({ request, response });
+          serviceTracker.endRequest({ request, response });
         },
       ],
     },
@@ -58,7 +62,7 @@ export const useFetch = <D = unknown, E extends Error = Error>(
   const serviceKey = useId();
   const responsesHash = useResponsesHash(serviceKey);
   const cache = useServiceCache();
-
+  const key = JSON.stringify(options.key);
   useEffect(() => {
     (async () => {
       setLoading(true);
@@ -75,7 +79,7 @@ export const useFetch = <D = unknown, E extends Error = Error>(
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [responsesHash]);
+  }, [responsesHash, key]);
 
   return {
     isLoading,

@@ -17,6 +17,7 @@ export class ObservableServiceCache extends Subscribable {
 
   constructor(cacheName: string) {
     super();
+    caches.delete(cacheName);
     this.cacheName = cacheName;
   }
 
