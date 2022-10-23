@@ -1,11 +1,14 @@
-import { http } from "../../rest/http";
+import { ApiOptions } from "../../rest/ApiOptions";
 import { ShowDetailed } from "../model/ShowDetailed";
 import { ShowSearchResult } from "../model/ShowSearchResult";
 
 const prefixUrl = "https://api.tvmaze.com";
 
-const search = async (searchStr: string): Promise<ShowSearchResult[]> => {
-  return await http
+const search = async (
+  searchStr: string,
+  apiOptions: ApiOptions
+): Promise<ShowSearchResult[]> => {
+  return await apiOptions.client
     .get(`search/shows`, {
       searchParams: {
         q: searchStr,
@@ -15,8 +18,11 @@ const search = async (searchStr: string): Promise<ShowSearchResult[]> => {
     .json<ShowSearchResult[]>();
 };
 
-const getById = async (id: number): Promise<ShowDetailed> => {
-  return await http
+const getById = async (
+  id: number,
+  apiOptions: ApiOptions
+): Promise<ShowDetailed> => {
+  return await apiOptions.client
     .get(`shows/${id}?embed[]=cast&embed[]=previousepisode`, {
       prefixUrl,
     })

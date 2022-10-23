@@ -1,3 +1,4 @@
+import { Maybe } from "@cast/core-util-types";
 import { RequestResponse } from "./model/RequestResponse";
 import { ServiceKey } from "./model/ServiceKey";
 import { PendingRequests } from "./PendingRequests";
@@ -29,6 +30,15 @@ export class ServiceTracker {
     this.cache = cache;
     this.serviceKey = serviceKey;
     this.pendingRequests = pendingRequests;
+  }
+
+  match(request: Request): Promise<Maybe<Response>> {
+    const pendingResponse = this.pendingRequests.getResponse(request);
+    if (pendingResponse) {
+      return pendingResponse;
+    } else {
+      return this.cache.match(request);
+    }
   }
 
   beginRequest(request: Request) {

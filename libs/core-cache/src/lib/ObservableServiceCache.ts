@@ -10,31 +10,33 @@ type ServiceState = {
 };
 
 export class ObservableServiceCache extends Subscribable {
-  private cache: Cache;
+  private cacheName: string;
   private requestGroupMap = new ManyToManySetMap<ServiceKey, Request>();
   private pendingRequests = new PendingRequests();
   private serviceState = new Map<ServiceKey, ServiceState>();
 
-  private constructor(cache: Cache) {
+  constructor(cacheName: string) {
     super();
-    this.cache = cache;
+    this.cacheName = cacheName;
   }
 
-  static create(): ObservableServiceCache {
-    return new ObservableServiceCache(new Cache());
+  private async getCache(): Promise<Cache> {
+    return caches.open(this.cacheName);
   }
 
-  match(request: Request): Promise<Maybe<Response>> {
+  async match(request: Request): Promise<Maybe<Response>> {
     const pendingResponse = this.pendingRequests.getResponse(request);
     if (pendingResponse) {
       return pendingResponse;
     } else {
-      return this.cache.match(request);
+      const cache = await this.getCache();
+      return cache.match(request);
     }
   }
 
-  startService(serviceKey: ServiceKey): ServiceTracker {
-    return new ServiceTracker(serviceKey, this.cache, this.pendingRequests);
+  async startService(serviceKey: ServiceKey): Promise<ServiceTracker> {
+    const cache = await this.getCache();
+    return new ServiceTracker(serviceKey, cache, this.pendingRequests);
   }
 
   getServiceResponsesHash(serviceKey: ServiceKey): Maybe<string> {

@@ -15,9 +15,9 @@ type ShowQuery = {
 
 export const useShowQuery = ({ id }: Props): ShowQuery => {
   const { data, error, isLoading } = useFetch({
-    try: async () => {
+    try: async (apiOptions) => {
       if (id) {
-        return await ShowService.getById(Number(id));
+        return await ShowService.getById(Number(id), apiOptions);
       } else {
         throw new Error("no ID provided");
       }

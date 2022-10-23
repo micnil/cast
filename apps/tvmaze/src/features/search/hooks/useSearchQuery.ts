@@ -19,11 +19,11 @@ export const useSearchQuery = ({ searchQuery }: Props): ShowQuery => {
     error,
     isLoading,
   } = useFetch({
-    try: async () => {
+    try: async (apiOptions) => {
       if (searchQuery) {
-        return await ShowService.search(searchQuery);
+        return await ShowService.search(searchQuery, apiOptions);
       } else {
-        return await ShowService.search("a");
+        return await ShowService.search("a", apiOptions);
       }
     },
     catch: async (err) => errorHandler(err),

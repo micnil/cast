@@ -7,7 +7,7 @@ type Props = {
 };
 
 export const ServiceCacheProvider: FC<Props> = ({ children }) => {
-  const [cache] = useState(() => ObservableServiceCache.create());
+  const [cache] = useState(() => new ObservableServiceCache('tvmaze'));
 
   return (
     <ServiceCacheContext.Provider value={cache}>
